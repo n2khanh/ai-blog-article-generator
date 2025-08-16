@@ -1,0 +1,88 @@
+/* Button Styles */
+.submit-btn, .action-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.action-btn {
+    width: auto;
+    padding: 12px 25px;
+    font-size: 16px;
+}
+
+.submit-btn:hover, .action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn:active, .action-btn:active {
+    transform: translateY(-1px);
+}
+
+.submit-btn:focus, .action-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn::before, .action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.submit-btn:hover::before, .action-btn:hover::before {
+    left: 100%;
+}
+
+/* Ensure buttons are clickable */
+button.action-btn, button.submit-btn {
+    pointer-events: auto !important;
+    z-index: 10;
+    position: relative;
+    cursor: pointer !important;
+}
+
+/* Debug: Make sure buttons are visible and clickable */
+button.action-btn:hover {
+    background: linear-gradient(135deg, #5a6fd8, #6a4190) !important;
+}
+
+button.action-btn:active {
+    background: linear-gradient(135deg, #4a5fc8, #5a3180) !important;
+}
+
+/* Logout Button */
+.logout-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}

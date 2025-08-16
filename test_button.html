@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Button Functionality</h1>
+    
+    <button class="test-button" onclick="testFunction()">
+        Test Button Click
+    </button>
+    
+    <button class="test-button" onclick="alert('Button works!')">
+        Test Alert
+    </button>
+    
+    <div id="result">
+        Click a button to test functionality...
+    </div>
+    
+    <script>
+        function testFunction() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<strong>✅ Button clicked successfully!</strong><br>Timestamp: ' + new Date().toLocaleString();
+            console.log('Test function called');
+        }
+        
+        // Test if JavaScript is working
+        console.log('JavaScript loaded successfully');
+        
+        // Add event listener as backup
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            const buttons = document.querySelectorAll('.test-button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('Button clicked via event listener');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

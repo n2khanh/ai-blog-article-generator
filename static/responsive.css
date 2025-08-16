@@ -1,0 +1,35 @@
+/* Responsive Design */
+@media (max-width: 768px) {
+    .auth-container, .main-container {
+        margin: 20px;
+        padding: 30px 25px;
+    }
+    
+    .auth-header h1, .main-header h1 {
+        font-size: 2em;
+    }
+    
+    .main-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container, .main-container {
+        padding: 25px 20px;
+    }
+    
+    .auth-header h1, .main-header h1 {
+        font-size: 1.8em;
+    }
+    
+    .submit-btn, .action-btn {
+        padding: 12px;
+        font-size: 16px;
+    }
+}

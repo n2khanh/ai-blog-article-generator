@@ -1,0 +1,10 @@
+/* Main CSS file - Import all other CSS files */
+@import url('base.css');
+@import url('animations.css');
+@import url('containers.css');
+@import url('buttons.css');
+@import url('forms.css');
+@import url('components.css');
+@import url('responsive.css');
+
+/* Additional global styles can be added here */

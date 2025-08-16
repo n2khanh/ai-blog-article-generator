@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - AI Blog Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='containers.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='forms.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='components.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='responsive.css') }}">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+        <div class="floating-shape shape4"></div>
+        <div class="floating-shape shape5"></div>
+    </div>
+    
+    <div class="particles" id="particles"></div>
+    
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1><i class="fas fa-user-plus"></i> Đăng ký</h1>
+            <p>Tạo tài khoản mới để bắt đầu hành trình</p>
+        </div>
+        
+        <form method="POST" id="registerForm">
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Tên đăng nhập" required>
+                <i class="fas fa-user"></i>
+            </div>
+            
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required>
+                <i class="fas fa-envelope"></i>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Mật khẩu" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" name="confirm_password" placeholder="Xác nhận mật khẩu" required>
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="registerSubmitBtn">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </button>
+        </form>
+        
+        <div class="auth-link">
+            <p>Đã có tài khoản? <a href="{{ url_for('login') }}">Đăng nhập ngay</a></p>
+        </div>
+    </div>
+
+    <!-- Load JavaScript files -->
+    <script src="{{ url_for('static', filename='core.js') }}"></script>
+    <script src="{{ url_for('static', filename='effects.js') }}"></script>
+    <script src="{{ url_for('static', filename='forms.js') }}"></script>
+    <script src="{{ url_for('static', filename='init.js') }}"></script>
+</body>
+</html>
+  
