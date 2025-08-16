@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Blog Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>🎥 AI Blog Article Generator</h1>
+  <input type="text" id="youtubeUrl" placeholder="Dán link YouTube...">
+  <button onclick="generateBlog()">Tạo Blog</button>
+  
+  <div id="loading" style="display:none;">⏳ Đang xử lý...</div>
+  <div id="result"></div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
