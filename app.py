@@ -94,8 +94,6 @@ def logout():
 
 @app.route("/generate", methods=["POST"])
 @login_required
-@app.route("/generate", methods=["POST"])
-@login_required
 def generate():
     data = request.json
     youtube_url = data.get("youtube_url")
