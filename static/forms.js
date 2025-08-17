@@ -8,6 +8,7 @@ function handleFormSubmission(formId, submitBtnId) {
     
     if (form && submitBtn) {
         form.addEventListener('submit', function(e) {
+            e.preventDefault(); // chặn submit mặc định
             // Change button state
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
             submitBtn.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';

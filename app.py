@@ -94,7 +94,6 @@ def generate():
             proxy_password="vd3rykiu0ote",
             )
         )
-
         transcript = ytt_api.fetch(video_id)
         transcript = transcript.to_raw_data()
         text = " ".join([item["text"] for item in transcript])
