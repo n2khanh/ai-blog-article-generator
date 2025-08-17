@@ -1,38 +1,30 @@
-// Blog functionality
-
 // Blog generation functionality
 async function generateBlog() {
     // Lấy elements
     const youtubeUrlElement = document.getElementById('youtubeUrl');
     const loadingDiv = document.getElementById('loading');
     const resultDiv = document.getElementById('result');
-    
+    const blogResultSection = document.getElementById('blog-result'); // Thêm element này
+
     // Kiểm tra elements tồn tại
-    if (!youtubeUrlElement) {
-        alert('⚠️ Lỗi: Không tìm thấy input YouTube URL');
+    if (!youtubeUrlElement || !loadingDiv || !resultDiv || !blogResultSection) {
+        alert('⚠️ Lỗi: Thiếu một số thành phần UI cần thiết.');
         return;
     }
-    
-    if (!loadingDiv) {
-        alert('⚠️ Lỗi: Không tìm thấy loading div');
-        return;
-    }
-    
-    if (!resultDiv) {
-        alert('⚠️ Lỗi: Không tìm thấy result div');
-        return;
-    }
-    
+
     // Lấy giá trị URL
     const youtubeUrl = youtubeUrlElement.value.trim();
-    
+
     if (!youtubeUrl) {
         alert('⚠️ Vui lòng nhập link YouTube!');
         youtubeUrlElement.focus();
         return;
     }
-    
-    // Hiển thị loading
+
+    // --- Bắt đầu hiệu ứng Loading ---
+    // Ẩn kết quả trước đó và hiển thị loading
+    resultDiv.style.display = 'none';
+    blogResultSection.style.display = 'none';
     loadingDiv.style.display = 'block';
     loadingDiv.innerHTML = `
         <div class="loading">
@@ -42,90 +34,64 @@ async function generateBlog() {
                 <div class="dot"></div>
             </div>
             <div class="loading-gradient">Đang xử lý video...</div>
-            <div class="loading-subtitle">AI đang phân tích và tạo nội dung blog</div>
-            <div class="loading-dots">
-                <div class="loading-dot"></div>
-                <div class="loading-dot"></div>
-                <div class="loading-dot"></div>
-            </div>
+            <div class="loading-subtitle">AI đang phân tích và tạo nội dung blog...</div>
         </div>
     `;
-    resultDiv.style.display = 'none';
-    
-    // Ẩn section kết quả blog cũ
-    const blogResultSection = document.getElementById('blogResult');
-    if (blogResultSection) {
-        blogResultSection.style.display = 'none';
-    }
-    
+
     try {
-        // Gọi API thật
         const response = await fetch('/generate', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ youtube_url: youtubeUrl })
         });
         
+        // Kiểm tra lỗi HTTP trước khi đọc JSON
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Ẩn loading
-        loadingDiv.style.display = 'none';
-        
-        // Hiển thị kết quả từ API
-        if (data.success) {
-            // Hiển thị thông báo thành công trong result div
-            const successMessage = `
-                <div class="result">
-                    <h3>🎯 Blog đã được tạo thành công!</h3>
-                    <p>Blog đã được lưu vào cơ sở dữ liệu.</p>
+            // Đọc body của response để lấy thông tin lỗi
+            const errorData = await response.json().catch(() => ({ error: 'Phản hồi không phải JSON hoặc server trả về lỗi không xác định.' }));
+            loadingDiv.style.display = 'none';
+            resultDiv.innerHTML = `
+                <div class="error">
+                    <h3>❌ Lỗi server</h3>
+                    <p>${errorData.error || `Lỗi không xác định: ${response.status}`}</p>
                 </div>
             `;
-            resultDiv.innerHTML = successMessage;
             resultDiv.style.display = 'block';
-            
-            // Hiển thị nội dung blog trong section riêng
-            const blogResultSection = document.getElementById('blogResult');
-            const blogContent = document.getElementById('blogContent');
-            
-            if (blogResultSection && blogContent) {
-                const blogHTML = `
-                    <div class="blog-preview">
-                        <h3>${data.title || 'Blog mới'}</h3>
-                        <div class="blog-meta">
-                            <span><i class="fas fa-link"></i> Video: ${youtubeUrl}</span>
-                            <span><i class="fas fa-calendar"></i> Ngày tạo: ${new Date().toLocaleDateString('vi-VN')}</span>
+            return;
+        }
+
+        const data = await response.json();
+
+        // --- Kết thúc hiệu ứng Loading ---
+        loadingDiv.style.display = 'none';
+
+        if (data.success) {
+            // Hiển thị blog đã tạo
+            const blogHTML = `
+                <div class="card blog-card">
+                    <div class="card-header">
+                        <div class="icon-container">
+                            <i class="fas fa-pencil-alt"></i>
                         </div>
-                        <div class="blog-text">
-                            <p>${data.content || 'Nội dung blog từ video YouTube'}</p>
-                        </div>
-                        <div class="blog-actions">
-                            <button class="action-btn" onclick="editBlog()">
-                                <i class="fas fa-edit"></i> Chỉnh sửa
-                            </button>
-                            <button class="action-btn" onclick="saveBlog()">
-                                <i class="fas fa-save"></i> Lưu blog
-                            </button>
-                            <button class="action-btn" onclick="viewBlog()">
-                                <i class="fas fa-eye"></i> Xem chi tiết
-                            </button>
-                        </div>
+                        <h3>${data.title}</h3>
                     </div>
-                `;
-                
-                blogContent.innerHTML = blogHTML;
-                blogResultSection.style.display = 'block';
-                blogResultSection.classList.add('fade-in');
-            }
-            
+                    <div class="card-body">
+                        ${data.content}
+                    </div>
+                </div>
+            `;
+            resultDiv.innerHTML = blogHTML;
+            resultDiv.style.display = 'block';
+            resultDiv.classList.add('fade-in'); // Sử dụng fade-in cho resultDiv
+            blogResultSection.innerHTML = resultDiv.innerHTML;
+            blogResultSection.style.display = 'block';
+            blogResultSection.classList.add('fade-in');
+
             // Xóa input để chuẩn bị tạo blog mới
             youtubeUrlElement.value = '';
-            
+
         } else {
             // Xử lý lỗi từ API
             resultDiv.innerHTML = `
@@ -135,12 +101,13 @@ async function generateBlog() {
                 </div>
             `;
             resultDiv.style.display = 'block';
+            blogResultSection.style.display = 'none'; // Đảm bảo blog cũ bị ẩn
         }
-        
+
     } catch (error) {
-        // Ẩn loading
+        // --- Kết thúc hiệu ứng Loading khi có lỗi ---
         loadingDiv.style.display = 'none';
-        
+
         // Hiển thị lỗi
         resultDiv.innerHTML = `
             <div class="error">
@@ -150,20 +117,6 @@ async function generateBlog() {
             </div>
         `;
         resultDiv.style.display = 'block';
+        blogResultSection.style.display = 'none'; // Đảm bảo blog cũ bị ẩn
     }
 }
-
-// Blog actions
-function editBlog(blogId) {
-    showMessage('result', `Chức năng chỉnh sửa blog ${blogId} đang được phát triển!`, 'error');
-}
-
-function saveBlog() {
-    showMessage('result', 'Blog đã được lưu thành công!', 'success');
-}
-
-function viewBlog(blogId) {
-    showMessage('result', `Chức năng xem chi tiết blog ${blogId} đang được phát triển!`, 'error');
-}
-
-

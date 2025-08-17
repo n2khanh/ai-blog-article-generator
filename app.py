@@ -37,7 +37,7 @@ def load_user(user_id):
 def get_video_id(youtube_url):
     parsed_url = urlparse(youtube_url)
     if parsed_url.hostname in ["www.youtube.com", "youtube.com"]:
-        # Chuyển đổi từ dict_keys thành list để có thể truy cập
+        # Sử dụng .get() để tránh lỗi nếu 'v' không tồn tại
         video_id_list = parse_qs(parsed_url.query).get("v")
         if video_id_list:
             return video_id_list[0]
