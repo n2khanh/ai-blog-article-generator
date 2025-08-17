@@ -11,10 +11,11 @@ import markdown
 from config import Config
 from youtube_transcript_api.proxies import WebshareProxyConfig
 
+# Khởi tạo ứng dụng Flask
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Initialize database
+# Khởi tạo các extension
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -22,11 +23,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# Cấu hình Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Create database tables
-with app.app_context():
-    db.create_all()
+# WSGI Application
+# Đây là đối tượng chính mà Render sẽ sử dụng để chạy ứng dụng
+# app = Flask(__name__) # Không cần lặp lại dòng này
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -35,7 +37,10 @@ def load_user(user_id):
 def get_video_id(youtube_url):
     parsed_url = urlparse(youtube_url)
     if parsed_url.hostname in ["www.youtube.com", "youtube.com"]:
-        return parse_qs(parsed_url.query)["v"][0]
+        # Chuyển đổi từ dict_keys thành list để có thể truy cập
+        video_id_list = parse_qs(parsed_url.query).get("v")
+        if video_id_list:
+            return video_id_list[0]
     elif parsed_url.hostname == "youtu.be":
         return parsed_url.path[1:]
     return None
@@ -50,10 +55,20 @@ def index():
 def register():
     if request.method == "POST":
         username = request.form["username"]
-        password = generate_password_hash(request.form["password"])
+        # Thêm logic xác nhận mật khẩu ở đây
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+        
+        if password != confirm_password:
+            # Nên sử dụng flash message để hiển thị lỗi
+            return "Mật khẩu xác nhận không khớp!" 
+
+        # Kiểm tra người dùng đã tồn tại
         if User.query.filter_by(username=username).first():
             return "User đã tồn tại!"
-        new_user = User(username=username, password=password)
+        
+        hashed_password = generate_password_hash(password)
+        new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for("login"))
@@ -90,8 +105,8 @@ def generate():
     try:
         ytt_api = YouTubeTranscriptApi(
             proxy_config=WebshareProxyConfig(
-            proxy_username="licowqkg",
-            proxy_password="vd3rykiu0ote",
+                proxy_username=os.getenv("PROXY_USERNAME"),
+                proxy_password=os.getenv("PROXY_PASSWORD"),
             )
         )
         transcript = ytt_api.fetch(video_id)
@@ -109,22 +124,19 @@ def generate():
     except Exception as e:
         return jsonify({"error": f"Lỗi AI: {str(e)}"}), 500
 
-    # Lưu vào DB
-    new_blog = Blog(title="Blog của tôi ", content=html_article, user_id=current_user.id)
+    new_blog = Blog(title="Blog của tôi", content=html_article, user_id=current_user.id)
     db.session.add(new_blog)
     db.session.commit()
 
-    return jsonify({"success": True, "content": html_article, "title" : "Blog của tôi"})
+    return jsonify({"success": True, "content": html_article, "title": "Blog của tôi"})
 
 @app.route("/api/test", methods=["POST"])
 def test():
     data = request.get_json()
-    print("📥 Dữ liệu client gửi lên:", data)   # log input
+    print("📥 Dữ liệu client gửi lên:", data)
     response = {"message": "Hello", "data": data}
-    print("📤 Dữ liệu Flask trả về:", response)  # log output
+    print("📤 Dữ liệu Flask trả về:", response)
     return jsonify(response)
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+# Không chạy app trong khối if __name__ == "__main__":
+# Render sẽ sử dụng Gunicorn để chạy ứng dụng
