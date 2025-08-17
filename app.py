@@ -11,7 +11,7 @@ import markdown
 import secrets
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32) 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tmp/database.db'
 db.init_app(app)
 
 login_manager = LoginManager()
