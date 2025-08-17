@@ -1,24 +1,31 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Blog
 import google.generativeai as genai
+from flask_migrate import Migrate
 from youtube_transcript_api import YouTubeTranscriptApi
 from urllib.parse import urlparse, parse_qs
 import os
 import markdown
-import secrets
+from config import Config
+
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32) 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tmp/database.db'
+app.config.from_object(Config)
+
+# Initialize database
 db.init_app(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Create database tables
+with app.app_context():
+    db.create_all()
 
 @login_manager.user_loader
 def load_user(user_id):
