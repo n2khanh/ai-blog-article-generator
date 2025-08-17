@@ -27,8 +27,7 @@
             <h1><i class="fas fa-magic"></i> AI Blog</h1>
             <p>Đăng nhập để bắt đầu tạo nội dung</p>
         </div>
-        
-        <form method="POST" id="loginForm">
+        <form method="POST" id="loginForm" action="{{ url_for('login')}}">
             <div class="form-group">
                 <input type="text" name="username" placeholder="Tên đăng nhập" required>
                 <i class="fas fa-user"></i>
