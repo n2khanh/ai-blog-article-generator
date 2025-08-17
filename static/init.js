@@ -23,17 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
         handleFormSubmission('registerForm', 'registerSubmitBtn');
     }
     
-    // Debug: Check if generateBlog button exists
-    const generateBtn = document.querySelector('button[onclick="generateBlog()"]');
+    const generateBtn = document.getElementById('generate-blog-btn');
     if (generateBtn) {
-        console.log('Generate blog button found:', generateBtn);
-        // Add additional event listener as backup
-        generateBtn.addEventListener('click', function(e) {
-            console.log('Button clicked via event listener');
-            generateBlog();
-        });
-    } else {
-        console.log('Generate blog button not found');
+        generateBtn.addEventListener('click', generateBlog);
     }
     
     console.log('Initialization complete');
