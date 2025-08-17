@@ -1,5 +1,6 @@
-Flask
-google.generativeai
-python-dotenv
-youtube-transcript-api
-requests
+Flask==3.0.3
+gunicorn==21.2.0
+google-generativeai==0.7.2
+python-dotenv==1.0.1
+youtube-transcript-api==0.6.2
+requests==2.32.3
