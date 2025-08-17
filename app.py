@@ -26,18 +26,15 @@ login_manager.login_view = "login"
 # Cấu hình Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# WSGI Application
-# Đây là đối tượng chính mà Render sẽ sử dụng để chạy ứng dụng
-# app = Flask(__name__) # Không cần lặp lại dòng này
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
 def get_video_id(youtube_url):
+    """Trích xuất ID video từ URL YouTube."""
     parsed_url = urlparse(youtube_url)
     if parsed_url.hostname in ["www.youtube.com", "youtube.com"]:
-        # Sử dụng .get() để tránh lỗi nếu 'v' không tồn tại
+        # Sử dụng .get() để tránh KeyError nếu tham số 'v' không tồn tại
         video_id_list = parse_qs(parsed_url.query).get("v")
         if video_id_list:
             return video_id_list[0]
@@ -55,15 +52,13 @@ def index():
 def register():
     if request.method == "POST":
         username = request.form["username"]
-        # Thêm logic xác nhận mật khẩu ở đây
         password = request.form["password"]
         confirm_password = request.form["confirm_password"]
-        
+
         if password != confirm_password:
             # Nên sử dụng flash message để hiển thị lỗi
             return "Mật khẩu xác nhận không khớp!" 
 
-        # Kiểm tra người dùng đã tồn tại
         if User.query.filter_by(username=username).first():
             return "User đã tồn tại!"
         
@@ -104,39 +99,28 @@ def generate():
         return jsonify({"error": "❌ Link YouTube không hợp lệ"}), 400
 
     try:
-        # Lấy transcript từ YouTube
-        ytt_api = YouTubeTranscriptApi(
-            proxy_config=WebshareProxyConfig(
-            proxy_username="licowqkg",
-            proxy_password="vd3rykiu0ote",
-            )
-        )
-        transcript = ytt_api.fetch(video_id)
-        transcript = transcript.to_raw_data()
-        text = " ".join([item["text"] for item in transcript])
+        # Thay thế cách gọi cũ bằng cách lấy transcript trực tiếp, tránh lỗi proxy
+        ytt = YouTubeTranscriptApi()
+        transcript_list = ytt.fetch(video_id, languages=['vi', 'en']).to_raw_data()
+        transcript_text = " ".join([item["text"] for item in transcript_list])
         
-        # Nếu transcript quá ngắn, trả về lỗi
-        if len(text) < 100:
+        if len(transcript_text) < 100:
             return jsonify({"error": "❌ Transcript quá ngắn để tạo blog"}), 400
 
     except Exception as e:
-        # Ghi lỗi ra console
         print(f"Lỗi lấy transcript từ YouTube: {e}")
         return jsonify({"error": f"Lỗi lấy transcript: {str(e)}"}), 500
 
     try:
-        # Gửi transcript đến Gemini AI để tạo blog
         model = genai.GenerativeModel("gemini-2.5-flash")
-        prompt = f"Viết một bài blog hấp dẫn, rõ ràng dựa trên transcript sau:\n{text}"
+        prompt = f"Viết một bài blog hấp dẫn, rõ ràng dựa trên transcript sau:\n{transcript_text}"
         response = model.generate_content(prompt)
         blog_article = response.text
         html_article = markdown.markdown(blog_article)
     except Exception as e:
-        # Ghi lỗi ra console
         print(f"Lỗi khi gọi Gemini API: {e}")
         return jsonify({"error": f"Lỗi AI: {str(e)}"}), 500
 
-    # Lưu blog vào cơ sở dữ liệu
     try:
         new_blog = Blog(title="Blog của tôi", content=html_article, user_id=current_user.id)
         db.session.add(new_blog)
@@ -145,16 +129,8 @@ def generate():
         print(f"Lỗi khi lưu blog vào DB: {e}")
         return jsonify({"error": f"Lỗi lưu trữ: {str(e)}"}), 500
 
-    # Trả về kết quả thành công
-    return jsonify({"success": True, "content": html_article, "title": "Blog của tôi"})
+    return jsonify({"success": True, "content": html_article, "title" : "Blog của tôi"})
 
-@app.route("/api/test", methods=["POST"])
-def test():
-    data = request.get_json()
-    print("📥 Dữ liệu client gửi lên:", data)
-    response = {"message": "Hello", "data": data}
-    print("📤 Dữ liệu Flask trả về:", response)
-    return jsonify(response)
-
-# Không chạy app trong khối if __name__ == "__main__":
-# Render sẽ sử dụng Gunicorn để chạy ứng dụng
+# Chỉ chạy server khi file này được thực thi trực tiếp, không phải khi triển khai
+if __name__ == "__main__":
+    app.run(debug=True)
