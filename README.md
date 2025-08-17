@@ -14,13 +14,4 @@ This project takes a YouTube link, extracts its transcript, and generates a stru
 - **AI Model:** OpenAI API (GPT)
 - **Other:** YouTube Transcript API
 
-## 📂 Project Structure
-.
-├── app.py # Flask app entrypoint
-├── models.py # AI model integration
-├── requirements.txt # Python dependencies
-├── static/ # CSS, JS, images
-├── templates/ # HTML templates
-├── .gitignore
-├── LICENSE
 
