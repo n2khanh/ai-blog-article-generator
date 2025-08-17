@@ -9,6 +9,7 @@ from urllib.parse import urlparse, parse_qs
 import os
 import markdown
 from config import Config
+from youtube_transcript_api.proxies import WebshareProxyConfig
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -87,8 +88,14 @@ def generate():
         return jsonify({"error": "❌ Link YouTube không hợp lệ"}), 400
 
     try:
-        yts = YouTubeTranscriptApi()
-        transcript = yts.fetch(video_id)
+        ytt_api = YouTubeTranscriptApi(
+            proxy_config=WebshareProxyConfig(
+            proxy_username="licowqkg",
+            proxy_password="vd3rykiu0ote",
+            )
+        )
+
+        transcript = ytt_api.fetch(video_id)
         transcript = transcript.to_raw_data()
         text = " ".join([item["text"] for item in transcript])
     except Exception as e:
