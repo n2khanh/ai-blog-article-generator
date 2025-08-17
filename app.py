@@ -94,40 +94,60 @@ def logout():
 
 @app.route("/generate", methods=["POST"])
 @login_required
+@app.route("/generate", methods=["POST"])
+@login_required
 def generate():
     data = request.json
     youtube_url = data.get("youtube_url")
     video_id = get_video_id(youtube_url)
 
     if not video_id:
+        print("Lỗi: Link YouTube không hợp lệ.")
         return jsonify({"error": "❌ Link YouTube không hợp lệ"}), 400
 
     try:
+        # Lấy transcript từ YouTube
         ytt_api = YouTubeTranscriptApi(
             proxy_config=WebshareProxyConfig(
-                proxy_username=os.getenv("PROXY_USERNAME"),
-                proxy_password=os.getenv("PROXY_PASSWORD"),
+            proxy_username="licowqkg",
+            proxy_password="vd3rykiu0ote",
             )
         )
         transcript = ytt_api.fetch(video_id)
         transcript = transcript.to_raw_data()
         text = " ".join([item["text"] for item in transcript])
+        
+        # Nếu transcript quá ngắn, trả về lỗi
+        if len(text) < 100:
+            return jsonify({"error": "❌ Transcript quá ngắn để tạo blog"}), 400
+
     except Exception as e:
+        # Ghi lỗi ra console
+        print(f"Lỗi lấy transcript từ YouTube: {e}")
         return jsonify({"error": f"Lỗi lấy transcript: {str(e)}"}), 500
 
     try:
+        # Gửi transcript đến Gemini AI để tạo blog
         model = genai.GenerativeModel("gemini-2.5-flash")
         prompt = f"Viết một bài blog hấp dẫn, rõ ràng dựa trên transcript sau:\n{text}"
         response = model.generate_content(prompt)
         blog_article = response.text
         html_article = markdown.markdown(blog_article)
     except Exception as e:
+        # Ghi lỗi ra console
+        print(f"Lỗi khi gọi Gemini API: {e}")
         return jsonify({"error": f"Lỗi AI: {str(e)}"}), 500
 
-    new_blog = Blog(title="Blog của tôi", content=html_article, user_id=current_user.id)
-    db.session.add(new_blog)
-    db.session.commit()
+    # Lưu blog vào cơ sở dữ liệu
+    try:
+        new_blog = Blog(title="Blog của tôi", content=html_article, user_id=current_user.id)
+        db.session.add(new_blog)
+        db.session.commit()
+    except Exception as e:
+        print(f"Lỗi khi lưu blog vào DB: {e}")
+        return jsonify({"error": f"Lỗi lưu trữ: {str(e)}"}), 500
 
+    # Trả về kết quả thành công
     return jsonify({"success": True, "content": html_article, "title": "Blog của tôi"})
 
 @app.route("/api/test", methods=["POST"])

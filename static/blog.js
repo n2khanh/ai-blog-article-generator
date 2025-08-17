@@ -4,7 +4,7 @@ async function generateBlog() {
     const youtubeUrlElement = document.getElementById('youtubeUrl');
     const loadingDiv = document.getElementById('loading');
     const resultDiv = document.getElementById('result');
-    const blogResultSection = document.getElementById('blogContent'); // Thêm element này
+    const blogResultSection = document.getElementById('blogResult'); // Thêm element này
 
     // Kiểm tra elements tồn tại
     if (!youtubeUrlElement || !loadingDiv || !resultDiv || !blogResultSection) {
