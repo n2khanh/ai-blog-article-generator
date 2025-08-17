@@ -70,12 +70,6 @@
                                 <small><i class="fas fa-calendar"></i> Ngày tạo: {{ blog.created_at }}</small>
                                 <p>{{ blog.content[:200]|safe }}...</p>
                                 <div class="mt-20">
-                                    <button class="action-btn" onclick="viewBlog('{{ blog.id }}')">
-                                        <i class="fas fa-eye"></i> Xem chi tiết
-                                    </button>
-                                    <button class="action-btn" onclick="editBlog('{{ blog.id }}')">
-                                        <i class="fas fa-edit"></i> Chỉnh sửa
-                                    </button>
                                 </div>
                             </li>
                         {% endfor %}
@@ -101,20 +95,6 @@
                         </div>
                         <h3>{{ blogs|length if blogs else 0 }}</h3>
                         <p>Blog đã tạo</p>
-                    </div>
-                    <div class="text-center">
-                        <div style="font-size: 2em; color: #4CAF50; margin-bottom: 10px;">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <h3>0</h3>
-                        <p>Lượt xem</p>
-                    </div>
-                    <div class="text-center">
-                        <div style="font-size: 2em; color: #ff6b6b; margin-bottom: 10px;">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <h3>0</h3>
-                        <p>Lượt thích</p>
                     </div>
                 </div>
             </section>

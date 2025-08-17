@@ -1,20 +1,11 @@
 // Blog functionality
-console.log('Blog.js loaded successfully');
 
 // Blog generation functionality
 async function generateBlog() {
-    console.log('🚀 generateBlog function called!');
-    
     // Lấy elements
     const youtubeUrlElement = document.getElementById('youtubeUrl');
     const loadingDiv = document.getElementById('loading');
     const resultDiv = document.getElementById('result');
-    
-    console.log('🔍 Elements found:', {
-        youtubeUrl: youtubeUrlElement,
-        loading: loadingDiv,
-        result: resultDiv
-    });
     
     // Kiểm tra elements tồn tại
     if (!youtubeUrlElement) {
@@ -41,10 +32,7 @@ async function generateBlog() {
         return;
     }
     
-    console.log('✅ YouTube URL:', youtubeUrl);
-    
     // Hiển thị loading
-    console.log('🔄 Showing loading...');
     loadingDiv.style.display = 'block';
     loadingDiv.innerHTML = `
         <div class="loading">
@@ -63,8 +51,6 @@ async function generateBlog() {
         </div>
     `;
     resultDiv.style.display = 'none';
-    
-    console.log('✅ Loading displayed, loading div:', loadingDiv.innerHTML);
     
     // Ẩn section kết quả blog cũ
     const blogResultSection = document.getElementById('blogResult');
